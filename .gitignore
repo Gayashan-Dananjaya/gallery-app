@@ -6,6 +6,9 @@ target/
 ### application.properties ###
 application.properties
 
+### node modules ###
+node_modules/
+
 ### IntelliJ IDEA ###
 .idea/
 *.iws

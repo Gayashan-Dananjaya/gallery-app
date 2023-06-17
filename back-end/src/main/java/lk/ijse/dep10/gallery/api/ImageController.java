@@ -23,7 +23,17 @@ public class ImageController {
 
     @GetMapping
     public List<String> getAllImages(UriComponentsBuilder uriBuilder) {
+        ArrayList<String> imageFileList = new ArrayList<>();
+        String imgDirPath = servletContext.getRealPath("/images");
+        File imgDir = new File(imgDirPath);
+        String[] imageFileNames = imgDir.list();
+        for (String imageFileName : imageFileNames) {
+            UriComponentsBuilder cloneBuilder = uriBuilder.cloneBuilder();
+            String url = cloneBuilder.pathSegment("images", imageFileName).toUriString();
+            imageFileList.add(url);
+        }
 
+        return imageFileList;
     }
 
     @ResponseStatus(HttpStatus.CREATED)
@@ -31,5 +41,28 @@ public class ImageController {
     public List<String> saveImages(@RequestPart("images")List<Part> imageFiles,
                                    UriComponentsBuilder uriBuilder) {
 
+        ArrayList<String> imageUrlList = new ArrayList<>();
+        System.out.println("1");
+
+        if (imageFiles != null) {
+            System.out.println("2");
+            String imageDirPath = servletContext.getRealPath("/images");
+            for (Part imageFile : imageFiles) {
+                System.out.println("3");
+                String imageFilePath = new File(imageDirPath, imageFile.getSubmittedFileName()).getAbsolutePath();
+
+                try {
+                    System.out.println("4");
+                    imageFile.write(imageFilePath);
+                    UriComponentsBuilder cloneBuilder = uriBuilder.cloneBuilder();
+                    String imageUrl = cloneBuilder.pathSegment("images", imageFile.getSubmittedFileName()).toUriString();
+                    imageUrlList.add(imageUrl);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        System.out.println(imageUrlList);
+        return imageUrlList;
     }
 }
